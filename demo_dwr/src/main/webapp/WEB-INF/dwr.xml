@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dwr PUBLIC "-//GetAhead Limited//DTD Direct Web Remoting 3.0//EN"
+        "http://www.getahead.ltd.uk/dwr/dwr30.dtd">
+
+<!-- 关键配置 -->       
+<dwr>
+    <allow>
+        <create creator="new" javascript="Chat">
+            <param name="class" value="com.xlr.demo.GetHello">
+            </param>
+        </create>
+    </allow>
+</dwr>
+
+<!--
+	            <include method="sayHello"></include>
+	            <exclude method="sayOne"></exclude>
+	<convert match="com.xlr.demo.GetHello" converter="bean"/>
+    <!DOCTYPE dwr PUBLIC "-//GetAhead Limited//DTD Direct Web Remoting 1.0//EN" "http://www.getahead.ltd.uk/dwr/dwr10.dtd">
+    <!DOCTYPE dwr PUBLIC "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" "http://www.getahead.ltd.uk/dwr/dwr20.dtd">
+-->

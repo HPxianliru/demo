@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+  		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+ 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!--配置jdbc.properties文件的位置信息 路径还是区分大小写 -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:spring/jdbc.properties" />
+	</bean>
+
+	<!-- 配置DataSource数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${user}" />
+		<property name="password" value="${password}" />
+		<property name="initialSize" value="20" /><!-- 初始化连接数量 -->
+		<property name="maxActive" value="600" /><!-- 最大连接数量  -->
+		<property name="maxIdle" value="10" /><!-- 最大空闲连接数量 -->
+		<property name="minIdle" value="10" /><!-- 最小空闲连接数量 -->
+	</bean>
+	
+	<!-- MyBatis 分页配置 -->
+	<!-- <bean id="paginationInterceptor" class="com.mybatis.page.interceptor.PaginationInterceptor" /> -->
+	
+	
+	<!-- MyBatis 配置SqlSessionFactory-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 配置数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		
+		<!-- MyBatis 配置 -->
+		<property name="configLocation" value="classpath:spring/configuration.xml"></property>
+		<!-- MyBatis 自动扫描Mapper.xml文件 -->
+		<property name="mapperLocations" value="classpath:sqlMap/*.xml" />
+		<!-- 对应的实体 -->
+		<property name="typeAliasesPackage" value="com.imgmap.bean"></property>
+		
+		<!-- 通用mapper插件 -->
+		<property name="plugins">  
+            <array>  
+                <bean class="com.github.abel533.mapperhelper.MapperInterceptor">  
+                    <property name="properties">  
+                        <value>  
+                            mappers=com.github.abel533.mapper.Mapper
+                            IDENTITY=POSTGRESQL
+                            notEmpty=true
+                        </value>  
+                    </property>  
+                </bean>  
+            </array>  
+        </property>  
+	</bean>
+
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.imgmap.dao" />
+		<property name="markerInterface" value="tk.mybatis.mapper.common.Mapper"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+	
+	<!-- 声明事物管理器  必须配置，否则事物不起作用-->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" read-only="false" />
+			<tx:method name="update*" propagation="REQUIRED" read-only="false" />
+			<tx:method name="delete*" propagation="REQUIRED" read-only="false" />
+			<tx:method name="get*" propagation="REQUIRED" read-only="false" />
+   			<tx:method name="*" propagation="SUPPORTS" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut expression="execution(* com.hzp.svs.*.*(..))" id="pointcut" />
+		<aop:advisor pointcut-ref="pointcut" advice-ref="txAdvice" />
+	</aop:config>
+	
+	<!-- 扫描所有的bean 但是不扫描Controller -->
+	<context:component-scan base-package="com.imgmap">
+	    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" /> 
+	</context:component-scan>
+	
+	<!-- 自动扫描bean -->
+	<!-- <context:component-scan base-package="com.hzp"></context:component-scan> -->
+</beans>

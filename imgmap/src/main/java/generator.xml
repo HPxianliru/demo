@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+	<context id="Postgresql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+
+		<plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+			<property name="mappers" value="tk.mybatis.mapper.common.Mapper" />
+			<!-- caseSensitive默认false，当数据库表名区分大小写时，可以将该属性设置为true -->
+			<property name="caseSensitive" value="true" />
+		</plugin>
+
+		<jdbcConnection driverClass="org.postgresql.Driver" connectionURL="jdbc:postgresql://localhost:5432/ppv"
+			userId="ppv" password="ppv">
+		</jdbcConnection>
+
+		<javaModelGenerator targetPackage="com.weltop.bean" targetProject="D:\02_workspace\ppvserver\src\main\java\" />
+
+		<sqlMapGenerator targetPackage="sqlMap" targetProject="D:\02_workspace\ppvserver\src\main\resources\" />
+
+		<javaClientGenerator targetPackage="com.weltop.dao" targetProject="D:\02_workspace\ppvserver\src\main\java\"
+			type="XMLMAPPER" />
+
+		<table tableName="tb_user" domainObjectName="User"> <property name="useActualColumnNames" value="true" /> </table>
+		<table tableName="tb_batch" domainObjectName="Batch"> <property name="useActualColumnNames" value="true" /> </table>
+		<table tableName="tb_project" domainObjectName="Project"> <property name="useActualColumnNames" value="true" /> </table>
+		<table tableName="tb_placemark" domainObjectName="Placemark"> <property name="useActualColumnNames" value="true" /> </table>
+		<table tableName="tb_user_project" domainObjectName="UserProject"> <property name="useActualColumnNames" value="true" /> </table>
+		<table tableName="tb_user_batch" domainObjectName="UserBatch"> <property name="useActualColumnNames" value="true" /> </table>
+	</context>
+</generatorConfiguration>
